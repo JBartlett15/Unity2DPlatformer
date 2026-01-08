@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     float horizontal;
     [SerializeField] private float speed = 8f;
-    [SerializeField] private float jumpingPower = 16f;
+    [SerializeField] public float jumpingPower = 16f;
     public bool isFacingRight = true;
 
     [SerializeField] private Transform groundCheck;
@@ -23,11 +23,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallSlideSpeed = 2f;
     [SerializeField] private float wallJumpDirection = 1;
 
-    public Animator anim;
+    //public Animator anim;
 
     private bool isJumping;
     private bool isWallJumping;
     private float wallJumpDeadTime;
+
+    public bool wallJumpAllowed = false;
 
     private float lastVerticalVelocity;
 
@@ -70,11 +72,13 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - apexBonus);
         lastVerticalVelocity = rb.velocity.y;
 
+        /*
         if (rb.velocity.x > 0 || rb.velocity.x < 0) anim.SetBool("Walking", true);
         else anim.SetBool("Walking", false);
         anim.SetBool("Grounded", IsGrounded());
         if (rb.velocity.y > 0) anim.SetBool("Ascent", true);
         else anim.SetBool("Ascent", false);
+        */
 
         if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f) Flip();
 
@@ -89,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && wallJumpDeadTime < 0.1f)
         {
+            if (!wallJumpAllowed) return;
             isWallJumping = true;
             rb.velocity = new Vector2(wallJumpDirection * wallJumpOutForce, wallJumpUpForce);
             StartCoroutine(WallJumpCooldown());
