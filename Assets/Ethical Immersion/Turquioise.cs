@@ -15,6 +15,7 @@ public class Turquioise : MonoBehaviour
 
     void Update()
     {
+        if (player.GetComponent<PlayerMovement>().wallJumpAllowed) return;
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         if (distanceToPlayer < detectionRange)
