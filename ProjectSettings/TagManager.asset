@@ -7,7 +7,6 @@ TagManager:
   - Obstacle
   - Ground
   - DeathPlane
-  - Crack
   layers:
   - Default
   - TransparentFX
