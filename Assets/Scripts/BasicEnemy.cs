@@ -9,7 +9,6 @@ public class BasicEnemy : MonoBehaviour
     Vector2 direction;
     [SerializeField] float speed;
 
-
     Vector2 startPos;
     private void Start()
     {
@@ -32,8 +31,6 @@ public class BasicEnemy : MonoBehaviour
         Debug.DrawRay(transform.position, direction, Color.green);
         if(hit.collider != null) if (hit.collider.CompareTag("Ground")) isFacingRight = !isFacingRight;
     }
-
-    //This line was removed
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
