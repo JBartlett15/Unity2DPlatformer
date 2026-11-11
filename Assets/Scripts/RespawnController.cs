@@ -21,6 +21,7 @@ public class RespawnController : MonoBehaviour
 
     IEnumerator Respawn()
     {
+        GetComponent<ScoreManager>().ScoreChange(-1000);
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         transform.localScale = new Vector3(0, 0, 0);
         yield return new WaitForSeconds(0.5f);
