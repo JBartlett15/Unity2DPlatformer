@@ -6,12 +6,12 @@ using UnityEngine;
 
 public class RespawnController : MonoBehaviour
 {
-    Vector2 startPos;
+    public Vector2 respawnPos;
     Rigidbody2D rb => this.GetComponent<Rigidbody2D>();
 
     private void Start()
     {
-        startPos = transform.position;
+        respawnPos = transform.position;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -24,7 +24,7 @@ public class RespawnController : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         transform.localScale = new Vector3(0, 0, 0);
         yield return new WaitForSeconds(0.5f);
-        transform.position = startPos;
+        transform.position = respawnPos;
         transform.localScale = new Vector3(1, 1, 1);
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         this.GetComponent<PlayerMovement>().isFacingRight = true;

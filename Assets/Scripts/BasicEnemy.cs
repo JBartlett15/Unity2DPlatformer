@@ -19,12 +19,12 @@ public class BasicEnemy : MonoBehaviour
     {
         if (isFacingRight)
         {
-            rb.velocity = new Vector2(speed, rb.velocity.y);
+            rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
             direction = Vector2.right;
         }
         else
         {
-            rb.velocity = new Vector2(-speed, rb.velocity.y);
+            rb.linearVelocity = new Vector2(-speed, rb.linearVelocity.y);
             direction = Vector2.left;
         }
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 0.5f);

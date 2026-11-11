@@ -7,7 +7,10 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb => this.GetComponent<Rigidbody2D>();
 
     float horizontal;
-    [SerializeField] private float speed = 8f;
+    [SerializeField] private float startingSpeed = 7f;
+    [SerializeField] private float currentSpeed = 7f;
+    [SerializeField] private float maxSpeed = 9f;
+    [SerializeField] private float acceleration = 1f;
     [SerializeField] private float jumpingPower = 16f;
     public bool isFacingRight = true;
 
@@ -25,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Animator anim;
 
+    private bool isWalking;
     private bool isJumping;
     private bool isWallJumping;
     private float wallJumpDeadTime;
@@ -53,27 +57,35 @@ public class PlayerMovement : MonoBehaviour
 
         if (coyoteTimer > 0f && jumpBufferTimer > 0f && !isJumping && !isWallJumping)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpingPower);
             jumpBufferTimer = 0f;
             StartCoroutine(JumpCooldown());
         }
 
-        if (rb.velocity.y > 0f && Input.GetButtonUp("Jump"))
+        if (rb.linearVelocity.y > 0f && Input.GetButtonUp("Jump"))
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
             coyoteTimer = 0f;
         }
 
-        if (rb.velocity.y < fallClamp) rb.velocity = new Vector2(rb.velocity.x, fallClamp);
+        if (rb.linearVelocity.y < fallClamp) rb.linearVelocity = new Vector2(rb.linearVelocity.x, fallClamp);
 
-        if (lastVerticalVelocity > 0 && rb.velocity.y <= 0)
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - apexBonus);
-        lastVerticalVelocity = rb.velocity.y;
+        if (lastVerticalVelocity > 0 && rb.linearVelocity.y <= 0)
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y - apexBonus);
+        lastVerticalVelocity = rb.linearVelocity.y;
 
-        if (rb.velocity.x > 0 || rb.velocity.x < 0) anim.SetBool("Walking", true);
-        else anim.SetBool("Walking", false);
+        if (rb.linearVelocity.x > 0 || rb.linearVelocity.x < 0)
+        {
+            anim.SetBool("Walking", true);
+            isWalking = true;
+        }
+        else
+        {
+            anim.SetBool("Walking", false);
+            isWalking = false;
+        }
         anim.SetBool("Grounded", IsGrounded());
-        if (rb.velocity.y > 0) anim.SetBool("Ascent", true);
+        if (rb.linearVelocity.y > 0) anim.SetBool("Ascent", true);
         else anim.SetBool("Ascent", false);
 
         if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f) Flip();
@@ -82,15 +94,16 @@ public class PlayerMovement : MonoBehaviour
         if (IsTouchingWall() && !IsGrounded() && horizontal != 0)
         {
             wallJumpDeadTime = 0f;
-            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlideSpeed, float.MaxValue));
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y, -wallSlideSpeed, float.MaxValue));
         }
         else
             if (wallJumpDeadTime < 0.2f) wallJumpDeadTime += Time.deltaTime;
 
         if (Input.GetButtonDown("Jump") && wallJumpDeadTime < 0.1f)
         {
+            currentSpeed = maxSpeed;
             isWallJumping = true;
-            rb.velocity = new Vector2(wallJumpDirection * wallJumpOutForce, wallJumpUpForce);
+            rb.linearVelocity = new Vector2(wallJumpDirection * wallJumpOutForce, wallJumpUpForce);
             StartCoroutine(WallJumpCooldown());
         }
 
@@ -102,7 +115,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isWallJumping)
         {
-            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+            rb.linearVelocity = new Vector2(horizontal * currentSpeed, rb.linearVelocity.y);
+            if (isWalking)
+            {
+                if (Input.GetButton("Fire1"))
+                {
+                    if (currentSpeed < maxSpeed) currentSpeed += Time.deltaTime * acceleration;
+                }
+                else if (currentSpeed > startingSpeed) currentSpeed -= Time.deltaTime * acceleration;
+            }
+            else
+            {
+                currentSpeed = startingSpeed;
+            }
         }
     }
 
