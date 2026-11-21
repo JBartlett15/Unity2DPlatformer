@@ -32,6 +32,8 @@ public class BasicEnemy : MonoBehaviour
         if(hit.collider != null) if (hit.collider.CompareTag("Ground")) isFacingRight = !isFacingRight;
     }
 
+    /*
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player")) StartCoroutine(Respawn());
@@ -43,4 +45,5 @@ public class BasicEnemy : MonoBehaviour
         transform.position = startPos;
         isFacingRight = false;
     }
+    */
 }
