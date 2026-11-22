@@ -761,7 +761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fcfe8c2bc35ed041b67f06bdf4ec095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  levelNumber: 0
+  levelCompletion: 000000
 --- !u!4 &1700846969
 Transform:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public int levelNumber;
+    public bool[] levelCompletion;
 
     public static GameManager instance;
 
@@ -14,8 +14,4 @@ public class GameManager : MonoBehaviour
             Destroy(this); //otherwise, get rid of this one
     }
 
-    void Update()
-    {
-        print(levelNumber);
-    }
 }
