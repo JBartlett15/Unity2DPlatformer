@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public bool[] levelCompletion;
+    public int lastLevelPlayed;
 
     public static GameManager instance;
 

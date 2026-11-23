@@ -1,12 +1,20 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
+
     Rigidbody2D rb => this.GetComponent<Rigidbody2D>();
 
+    public Controls controls;
+    private InputAction move;
+    private InputAction jump;
+    private InputAction run;
     float horizontal;
+
+
     [SerializeField] private float startingSpeed = 7f;
     [SerializeField] private float currentSpeed = 7f;
     [SerializeField] private float maxSpeed = 9f;
@@ -35,6 +43,31 @@ public class PlayerMovement : MonoBehaviour
 
     private float lastVerticalVelocity;
 
+
+    void Awake()
+    {
+        controls = new Controls();
+    }
+
+    void OnEnable()
+    {
+        move = controls.Main.Move;
+        move.Enable();
+
+        jump = controls.Main.Jump;
+        jump.Enable();
+
+        run = controls.Main.Run;
+        run.Enable();
+    }
+
+    void OnDisable()
+    {
+        move.Disable();
+        jump.Disable();
+        run.Disable();
+    }
+
     private void Start()
     {
         coyoteTimer = 0f;
@@ -43,9 +76,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        horizontal = Input.GetAxisRaw("Horizontal");
+        horizontal = move.ReadValue<float>(); //Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetButtonDown("Jump"))
+
+        if (jump.WasPressedThisFrame())
             jumpBufferTimer = 0.1f;
         else if (jumpBufferTimer > 0f)
             jumpBufferTimer -= Time.deltaTime;
@@ -62,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(JumpCooldown());
         }
 
-        if (rb.linearVelocity.y > 0f && Input.GetButtonUp("Jump"))
+        if (rb.linearVelocity.y > 0f && jump.WasReleasedThisFrame())
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
             coyoteTimer = 0f;
@@ -99,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
         else
             if (wallJumpDeadTime < 0.2f) wallJumpDeadTime += Time.deltaTime;
 
-        if (Input.GetButtonDown("Jump") && wallJumpDeadTime < 0.1f)
+        if (jump.WasPressedThisFrame() && wallJumpDeadTime < 0.1f)
         {
             currentSpeed = maxSpeed;
             isWallJumping = true;
@@ -118,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(horizontal * currentSpeed, rb.linearVelocity.y);
             if (isWalking)
             {
-                if (Input.GetButton("Fire1"))
+                if (run.ReadValue<float>() > 0)
                 {
                     if (currentSpeed < maxSpeed) currentSpeed += Time.deltaTime * acceleration;
                 }

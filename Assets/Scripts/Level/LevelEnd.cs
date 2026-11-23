@@ -10,6 +10,7 @@ public class LevelEnd : MonoBehaviour
         if(col.gameObject.tag == "Player")
         {
             GameManager.instance.levelCompletion[levelNumber] = true;
+            GameManager.instance.lastLevelPlayed = levelNumber;
             SceneManager.LoadScene(1);
         }
     }
